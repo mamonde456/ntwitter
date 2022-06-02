@@ -4,15 +4,19 @@ import Auth from "../routes/Auth";
 import Home from "../routes/Home";
 import Navigation from "./Navigation";
 
-function AppRouter({ isLoggedIn }) {
+function AppRouter({ isLoggedIn, userObj }) {
   return (
     <Router>
       {isLoggedIn && <Navigation />}
       <Routes>
         {isLoggedIn ? (
           <>
-            <Route exact path="/" element={<Home />}></Route>
-            <Route exact path="/profile" element={<Profile />}></Route>
+            <Route exact path="/" element={<Home userObj={userObj} />}></Route>
+            <Route
+              exact
+              path="/profile"
+              element={<Profile isLoggedIn={isLoggedIn} />}
+            ></Route>
           </>
         ) : (
           <Route exact path="/" element={<Auth />}></Route>
