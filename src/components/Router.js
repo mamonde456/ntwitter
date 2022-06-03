@@ -4,10 +4,10 @@ import Auth from "../routes/Auth";
 import Home from "../routes/Home";
 import Navigation from "./Navigation";
 
-function AppRouter({ isLoggedIn, userObj }) {
+function AppRouter({ isLoggedIn, userObj, refreshUser }) {
   return (
     <Router>
-      {isLoggedIn && <Navigation />}
+      {isLoggedIn && <Navigation userObj={userObj} />}
       <Routes>
         {isLoggedIn ? (
           <>
@@ -15,7 +15,7 @@ function AppRouter({ isLoggedIn, userObj }) {
             <Route
               exact
               path="/profile"
-              element={<Profile isLoggedIn={isLoggedIn} />}
+              element={<Profile userObj={userObj} refreshUser={refreshUser} />}
             ></Route>
           </>
         ) : (
