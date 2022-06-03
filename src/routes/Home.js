@@ -9,13 +9,10 @@ import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import { dbService, storageService } from "myBase";
 import React, { useEffect, useRef, useState } from "react";
 import Nweet from "../components/Nweet";
-import { v4 } from "uuid";
+import NweetFactory from "components/NweetFactory";
 
 function Home({ userObj }) {
-  const [nweet, setNweet] = useState("");
   const [nweets, setNweets] = useState([]);
-  const [imgFile, setImgFile] = useState("");
-  const imgInput = useRef();
 
   useEffect(() => {
     const q = query(
@@ -30,70 +27,10 @@ function Home({ userObj }) {
       setNweets(nweetArr);
     });
   }, []);
-  const onSubmit = async (event) => {
-    event.preventDefault();
-    let imgFileUrl = "";
-    if (imgFileUrl !== "") {
-      const imgRef = ref(storageService, `${userObj.uid}/${v4()}`);
-      const response = await uploadString(imgRef, imgFile, "data_url");
-      imgFileUrl = await getDownloadURL(response.ref);
-    }
-    const nweetObj = {
-      text: nweet,
-      createdAt: Date.now(),
-      creatorId: userObj.uid,
-      imgFileUrl,
-    };
-    await addDoc(collection(dbService, "nweets"), nweetObj);
-    setNweet("");
-    setImgFile("");
-  };
-  const onChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setNweet(value);
-  };
-  const onFile = (event) => {
-    const {
-      target: { files },
-    } = event;
-    const theFile = files[0];
-    const reader = new FileReader();
-    reader.onloadend = (finishedEvent) => {
-      const {
-        currentTarget: { result },
-      } = finishedEvent;
-      setImgFile(result);
-    };
-    reader.readAsDataURL(theFile);
-  };
-  const onClearImg = () => {
-    console.log(imgInput.current);
-
-    setImgFile("");
-    imgInput.current.value = "";
-  };
   return (
-    <div>
-      <form onSubmit={onSubmit}>
-        <input
-          type="text"
-          placeholder="What's on your mind?"
-          maxLength={120}
-          onChange={onChange}
-          value={nweet}
-        />
-        <input type="file" accept="image/*" onChange={onFile} ref={imgInput} />
-        <input type="submit" value="Nweet" />
-        {imgFile && (
-          <div>
-            <img src={imgFile} width="50px" height="50px" />
-            <button onClick={onClearImg}>clear</button>
-          </div>
-        )}
-      </form>
-      <div>
+    <div className="container">
+      <NweetFactory userObj={userObj} />
+      <div style={{ marginTop: 30 }}>
         {nweets.map((nweet) => (
           <Nweet
             key={nweet.id}
